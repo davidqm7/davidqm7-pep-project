@@ -14,7 +14,7 @@ public class AccountDAO {
         List<Account> accounts = new ArrayList<>(); 
 
         try {
-            String sql = "Select * FROM account;";
+            String sql = "SELECT * FROM account;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             ResultSet rs = preparedStatement.executeQuery();
