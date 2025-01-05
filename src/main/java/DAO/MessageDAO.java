@@ -12,7 +12,7 @@ public class MessageDAO {
     public Message insertMessage(Message message){
         try (Connection connection = ConnectionUtil.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(
-            "INSERT INTO message (posted_by,message_text, time_posted_enoch) VALUES (?,?,?);", 
+            "INSERT INTO message (posted_by,message_text, time_posted_epoch) VALUES (?,?,?);", 
          Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, message.getPosted_by());
             preparedStatement.setString(2, message.getMessage_text());
@@ -79,7 +79,7 @@ public class MessageDAO {
         Connection connection = ConnectionUtil.getConnection();
 
         try {
-            String sql = "DELETE message WHERE message_id = ?;";
+            String sql = "DELETE FROM message WHERE message_id = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
             preparedStatement.setInt(1, id);
@@ -91,20 +91,20 @@ public class MessageDAO {
     }
 
     public void updateMessage(int id, Message message){
-        Connection connection = ConnectionUtil.getConnection();
-
-        try {
-            String sql = "UPDATE message SET posted_by = ?, message_text = ?, time_posted_epoch = ? WHERE message_id = ?;";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-            preparedStatement.setInt(1, message.getPosted_by());
-            preparedStatement.setString(2, message.getMessage_text());
-            preparedStatement.setLong(3, message.getTime_posted_epoch());
-            preparedStatement.setInt(4, id);
-            preparedStatement.executeUpdate();
+        try (Connection connection = ConnectionUtil.getConnection()) {
+            String sql = "UPDATE message SET message_text = ?, time_posted_epoch = ? WHERE message_id = ?";
             
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, message.getMessage_text());
+            preparedStatement.setLong(2, message.getTime_posted_epoch());
+            preparedStatement.setInt(3, id);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("No rows updated. Message ID not found: " + id);
+            }
         } catch (SQLException e) {
-            System.out.print("Error while updating message" + e.getMessage());
+            throw new RuntimeException("Error updating message: " + e.getMessage(), e);
         }
     }
 
