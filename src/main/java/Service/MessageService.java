@@ -5,7 +5,6 @@ import Model.Message;
 
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
 
 public class MessageService {
     MessageDAO messageDAO;
