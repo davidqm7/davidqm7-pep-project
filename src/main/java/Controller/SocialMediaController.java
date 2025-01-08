@@ -52,10 +52,11 @@ public class SocialMediaController {
         if(account != null){
             ctx.json(account);
         }else{
-            ctx.status(401).result("Unauthorized: Invalid username or password");
-        }
-
-        
+            ctx.status(401);
+        }   
     }
+
+    
+
 
 }
