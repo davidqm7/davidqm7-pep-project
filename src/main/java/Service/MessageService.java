@@ -34,11 +34,7 @@ public class MessageService {
     }
 
     public Message getMessageById(int id){
-        Message message = messageDAO.getMessageById(id);
-        if(message == null){
-            throw new IllegalArgumentException("Message not found with the id");
-        }
-        return message;
+        return messageDAO.getMessageById(id);
     }
 
     public void deleteMessage(int id){

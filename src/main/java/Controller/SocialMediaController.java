@@ -1,9 +1,12 @@
 package Controller;
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Model.Account;
+import Model.Message;
 import Service.AccountService;
 import Service.MessageService;
 import io.javalin.Javalin;
@@ -27,6 +30,9 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
         app.post("/register", this::createAccount);
         app.post("/login", this::loginToAccount);
+        app.post("/messages", this::createMessages);
+        app.get("/messages", this::getMessages);
+        app.get("/messages/{message_id}", this::getMessageById);
 
         return app;
     }
@@ -60,7 +66,40 @@ public class SocialMediaController {
         }   
     }
 
-    
+    public void createMessages(Context ctx) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Message message = mapper.readValue(ctx.body(), Message.class);
+            Message newMessage = messageService.addMessage(message);
+            if(newMessage != null){
+                ctx.json(mapper.writeValueAsString(newMessage));
+            }
+            else{
+                ctx.status(400); 
+            }
+            
+        } catch (IllegalArgumentException e) {
+            ctx.status(400);
+        }
+    }
+
+    public void getMessages (Context ctx){
+        List<Message> messages = messageService.getAllMessages();
+        ctx.json(messages);
+    }
+
+    public void getMessageById(Context ctx)throws JsonProcessingException{
+        int message_id = Integer.parseInt(ctx.pathParam("message_id")); 
+        Message returnedMessage = messageService.getMessageById(message_id);
+        if(returnedMessage != null){
+            ctx.json(returnedMessage);
+        }else{
+            ctx.status(200).result("");
+        }
+    }
 
 
-}
+
+    }
+
+
