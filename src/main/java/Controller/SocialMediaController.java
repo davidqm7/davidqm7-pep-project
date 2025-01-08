@@ -33,6 +33,7 @@ public class SocialMediaController {
         app.post("/messages", this::createMessages);
         app.get("/messages", this::getMessages);
         app.get("/messages/{message_id}", this::getMessageById);
+        app.delete("/messages/{message_id}", this::deleteMessage);
 
         return app;
     }
@@ -88,7 +89,7 @@ public class SocialMediaController {
         ctx.json(messages);
     }
 
-    public void getMessageById(Context ctx)throws JsonProcessingException{
+    public void getMessageById(Context ctx){
         int message_id = Integer.parseInt(ctx.pathParam("message_id")); 
         Message returnedMessage = messageService.getMessageById(message_id);
         if(returnedMessage != null){
@@ -98,6 +99,17 @@ public class SocialMediaController {
         }
     }
 
+    public void deleteMessage(Context ctx){
+        try {
+            int message_id = Integer.parseInt(ctx.pathParam("message_id"));  
+            Message deletedMessage = messageService.getMessageById(message_id);
+            messageService.deleteMessage(message_id);
+            ctx.json(deletedMessage); 
+            ctx.status(200); 
+        } catch (IllegalArgumentException e) {
+            ctx.status(200); 
+        }
+    }
 
 
     }
