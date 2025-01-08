@@ -1,12 +1,11 @@
 package Controller;
 
-import Model.Account;
-import Model.Message;
-import Service.AccountService;
-import Service.MessageService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
+
+import Model.Account;
+import Service.AccountService;
+import Service.MessageService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -27,6 +26,7 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.post("/register", this::createAccount);
+        app.post("/login", this::loginToAccount);
 
         return app;
     }
@@ -41,6 +41,21 @@ public class SocialMediaController {
         else{
             ctx.status(400);
         }
+    }
+
+    public void loginToAccount(Context ctx) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        Account loginAccount = mapper.readValue(ctx.body(),Account.class);
+        
+        Account account = accountService.authenticateAccount(loginAccount.getUsername(),loginAccount.getPassword());
+
+        if(account != null){
+            ctx.json(account);
+        }else{
+            ctx.status(401).result("Unauthorized: Invalid username or password");
+        }
+
+        
     }
 
 }
