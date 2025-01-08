@@ -1,6 +1,7 @@
 package Controller;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +35,8 @@ public class SocialMediaController {
         app.get("/messages", this::getMessages);
         app.get("/messages/{message_id}", this::getMessageById);
         app.delete("/messages/{message_id}", this::deleteMessage);
+        app.patch("/messages/{message_id}", this::updateMessage);
+
 
         return app;
     }
@@ -108,6 +111,26 @@ public class SocialMediaController {
             ctx.status(200); 
         } catch (IllegalArgumentException e) {
             ctx.status(200); 
+        }
+    }
+
+    public void updateMessage(Context ctx) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Map<String, String> body = mapper.readValue(ctx.body(), Map.class);
+            String newMessageText = body.get("message_text");
+            int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+
+            Message updatedMessage = messageService.updateMessage(message_id, newMessageText);
+            
+            if(updatedMessage != null){
+                ctx.json(updatedMessage);
+            }
+            else{
+                ctx.status(400);
+            }
+        } catch (IllegalArgumentException e) {
+            ctx.status(400);
         }
     }
 

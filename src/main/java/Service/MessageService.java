@@ -45,20 +45,21 @@ public class MessageService {
         messageDAO.deleteMessage(id);
     }
 
-    public Message updateMessage(int id, Message message){
-        if(message.getMessage_text() == null || message.getMessage_text().isBlank()){
+    public Message updateMessage(int id, String message){
+        if(message == null || message.isBlank()){
             throw new IllegalArgumentException("Message cannot be null or blank");
         }
-        if(message.getMessage_text().length() > 255){
+        if(message.length() > 255){
             throw new IllegalArgumentException("Message cannot be more than 255 characters");
         }
-        if (message.getPosted_by() <= 0) {
-            throw new IllegalArgumentException("Invalid user ID");
-        }
         try {
-            messageDAO.updateMessage(id, message);
-            Message updatedMessage = messageDAO.getMessageById(id);
-            return updatedMessage; 
+            Message existingMessage = messageDAO.getMessageById(id);
+            if (existingMessage == null) {
+                throw new IllegalArgumentException("Message not found with the provided ID");
+            }
+            existingMessage.setMessage_text(message);
+            messageDAO.updateMessage(id, existingMessage);
+            return messageDAO.getMessageById(id);
         } catch (Exception e) {
             throw new RuntimeException("Error while updating the account: " + e.getMessage());
         }

@@ -92,12 +92,11 @@ public class MessageDAO {
 
     public void updateMessage(int id, Message message){
         try (Connection connection = ConnectionUtil.getConnection()) {
-            String sql = "UPDATE message SET message_text = ?, time_posted_epoch = ? WHERE message_id = ?";
+            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
             
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, message.getMessage_text());
-            preparedStatement.setLong(2, message.getTime_posted_epoch());
-            preparedStatement.setInt(3, id);
+            preparedStatement.setInt(2, id);
 
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected == 0) {
