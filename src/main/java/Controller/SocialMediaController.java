@@ -33,6 +33,7 @@ public class SocialMediaController {
 
     private void createAccount(Context ctx)throws JsonProcessingException{
         ObjectMapper mapper = new ObjectMapper();
+        try{
         Account account = mapper.readValue(ctx.body(), Account.class);
         Account registerAccount = accountService.addAccount(account);
         if(registerAccount != null){
@@ -41,6 +42,9 @@ public class SocialMediaController {
         else{
             ctx.status(400);
         }
+    }catch(IllegalArgumentException e){
+        ctx.status(400); 
+    }
     }
 
     public void loginToAccount(Context ctx) throws JsonProcessingException{
