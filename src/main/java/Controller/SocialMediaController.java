@@ -36,6 +36,7 @@ public class SocialMediaController {
         app.get("/messages/{message_id}", this::getMessageById);
         app.delete("/messages/{message_id}", this::deleteMessage);
         app.patch("/messages/{message_id}", this::updateMessage);
+        app.get("/accounts/{account_id}/messages", this::getMessagesFromUser);
 
 
         return app;
@@ -131,6 +132,19 @@ public class SocialMediaController {
             }
         } catch (IllegalArgumentException e) {
             ctx.status(400);
+        }catch(Exception e){
+            ctx.status(400);
+        }
+    }
+
+    public void getMessagesFromUser(Context ctx){
+        try {
+            int account_id = Integer.parseInt(ctx.pathParam("account_id"));
+            List<Message> messages = messageService.getMessagesByAccountId(account_id);
+            ctx.json(messages);
+            
+        } catch (Exception e) {
+            ctx.status(200);
         }
     }
 

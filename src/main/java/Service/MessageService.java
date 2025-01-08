@@ -65,5 +65,15 @@ public class MessageService {
         }
     }
 
+    public List<Message> getMessagesByAccountId(int id){
+        if(id <=0){
+            throw new IllegalArgumentException("Invalid Id");
+        }
+        try {
+            return messageDAO.getMessageByAccountId(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while fetching messages: " + e.getMessage());
+        }
+    }
 
 }
